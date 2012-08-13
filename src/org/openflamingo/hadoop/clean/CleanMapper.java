@@ -20,8 +20,10 @@ public class CleanMapper extends Mapper<LongWritable, Text, NullWritable, Text> 
 
 	@Override
 	protected void setup(Context context) throws IOException, InterruptedException {
-	Configuration configuration = context.getConfiguration();
-		inDelimiter = configuration.get("indelimiter");
+		Configuration configuration = context.getConfiguration();
+		//need validation -> Driver로 위임.
+		//input이 없을 때
+		inDelimiter = configuration.get("indelimiter"); //get(String, default);
 		outDelimiter = configuration.get("outdelimiter");
 		target = configuration.get("target");
 	}
@@ -29,10 +31,10 @@ public class CleanMapper extends Mapper<LongWritable, Text, NullWritable, Text> 
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String[] line = value.toString().split(inDelimiter);
-		String outputLine="";
-		for(int i=0;i<line.length;i++)
-		{
-			if(Integer.parseInt(target) == i)   continue;
+		//a,b,c, -> 3개.
+		String outputLine = "";
+		for (int i = 0; i < line.length; i++) {
+			if (Integer.parseInt(target) == i) continue;
 			outputLine = outputLine + line[i] + outDelimiter;
 		}
 		context.write(NullWritable.get(), new Text(outputLine.substring(0, outputLine.length() - 1)));

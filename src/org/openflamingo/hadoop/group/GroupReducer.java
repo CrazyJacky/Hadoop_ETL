@@ -24,12 +24,12 @@ public class GroupReducer extends Reducer<Text, Text, NullWritable, Text> {
 
 	@Override
 	protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-		String outputString=key.toString() + " : ";
+		String outputString = key.toString() + " : ";
 		Iterator<Text> iterator = values.iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			outputString += iterator.next() + outDelimiter;
 		}
-		context.write(NullWritable.get(),new Text(outputString.substring(0,outputString.length()-1)));
+		context.write(NullWritable.get(), new Text(outputString.substring(0, outputString.length() - 1)));
 	}
 
 	@Override

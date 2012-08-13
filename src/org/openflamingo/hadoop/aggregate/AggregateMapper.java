@@ -14,13 +14,11 @@ import java.io.IOException;
  * @author Hyunje
  */
 public class AggregateMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
-	protected  void setup(Context context) throws IOException, InterruptedException{
+	protected void setup(Context context) throws IOException, InterruptedException {
 		Configuration configuration = context.getConfiguration();
 	}
-	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException{
-		context.write(NullWritable.get(),value);
-	}
-	protected void cleanup(Context context) throws IOException, InterruptedException{
-	}
 
+	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+		context.write(NullWritable.get(), value);
+	}
 }

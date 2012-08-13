@@ -34,7 +34,7 @@ public class GenerateMapper extends Mapper<LongWritable, Text, NullWritable, Tex
 
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-		context.write(NullWritable.get(),new Text(value+outDelimiter+startIndex));
+		context.write(NullWritable.get(), new Text(value + outDelimiter + startIndex));
 		startIndex++;
 	}
 

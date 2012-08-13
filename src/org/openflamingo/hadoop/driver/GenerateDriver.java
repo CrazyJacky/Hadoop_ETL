@@ -27,6 +27,7 @@ public class GenerateDriver extends Configured implements Tool {
 		int res = ToolRunner.run(new GenerateDriver(), args);
 		System.exit(res);
 	}
+
 	@Override
 	public int run(String[] args) throws Exception {
 		Job countJob = new Job();
@@ -37,13 +38,13 @@ public class GenerateDriver extends Configured implements Tool {
 		//Run counter job.
 		countJob.waitForCompletion(true);
 		Counters counters = countJob.getCounters();
-
+		//Check status of finished value of counter job.
 		//Set index parameter for generate Mapper
 		CounterGroup localCounterGroup = counters.getGroup("LocalCounter".toUpperCase());
 		CounterGroup globalCounterGroup = counters.getGroup("globalCounter".toUpperCase());
 		Long globalCountSize = globalCounterGroup.findCounter("counter".toUpperCase()).getValue();
-		int startIndex =0;
-		for(Counter each : localCounterGroup){
+		int startIndex = 0;
+		for (Counter each : localCounterGroup) {
 			String mapperID = each.getName();
 			Long mapperCountSize = each.getValue();
 			generateJob.getConfiguration().set(mapperID, startIndex + "," + mapperCountSize.toString());
@@ -54,13 +55,13 @@ public class GenerateDriver extends Configured implements Tool {
 	}
 
 	private void parseArguementsAndSetCountJob(String[] args, Job countJob, Job genJob) throws Exception {
-		for(int i=0;i<args.length;++i){
+		for (int i = 0; i < args.length; ++i) {
 			if (args[i].equals("-input")) {
 				FileInputFormat.addInputPaths(countJob, args[++i]);
-				FileInputFormat.addInputPaths(genJob,args[i]);
+				FileInputFormat.addInputPaths(genJob, args[i]);
 			} else if (args[i].equals("-countoutput")) {
 				FileOutputFormat.setOutputPath(countJob, new Path(args[++i]));
-			} else if (args[i].equals("-generateoutput")){
+			} else if (args[i].equals("-generateoutput")) {
 				FileOutputFormat.setOutputPath(genJob, new Path(args[++i]));
 			} else if (args[i].equals("-jobName")) {
 				countJob.getConfiguration().set("mapred.job.name", args[++i]);

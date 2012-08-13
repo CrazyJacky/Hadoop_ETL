@@ -47,25 +47,25 @@ public class Sample2Driver extends org.apache.hadoop.conf.Configured implements 
 	public int run(String[] args) throws Exception {
 		Job job = new Job();
 
-				int result = parseArguements(args, job);
-				if (result != 0) {
-					return result;
-				}
+		int result = parseArguements(args, job);
+		if (result != 0) {
+			return result;
+		}
 
-				job.setJarByClass(Sample2Driver.class);
+		job.setJarByClass(Sample2Driver.class);
 
-				// Mapper Class
-				job.setMapperClass(SampleMapper.class);
+		// Mapper Class
+		job.setMapperClass(SampleMapper.class);
 
-				// Output Key/Value
-				job.setMapOutputKeyClass(NullWritable.class);
-				job.setMapOutputValueClass(Text.class);
+		// Output Key/Value
+		job.setMapOutputKeyClass(NullWritable.class);
+		job.setMapOutputValueClass(Text.class);
 
-				// Reducer Task
-				job.setNumReduceTasks(0);
+		// Reducer Task
+		job.setNumReduceTasks(0);
 
-				// Run a Hadoop Job
-				return job.waitForCompletion(true) ? 0 : 1;
+		// Run a Hadoop Job
+		return job.waitForCompletion(true) ? 0 : 1;
 	}
 
 	private int parseArguements(String[] args, Job job) throws Exception {

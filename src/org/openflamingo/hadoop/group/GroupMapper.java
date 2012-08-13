@@ -31,11 +31,10 @@ public class GroupMapper extends Mapper<LongWritable, Text, Text, Text> {
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String[] line = value.toString().split(inDelimiter);
-		String keyCol="";
-		String valueCol="";
-		for(int i=0;i<line.length;i++)
-		{
-			if(i == Integer.parseInt(keyColumn))
+		String keyCol = "";
+		String valueCol = "";
+		for (int i = 0; i < line.length; i++) {
+			if (i == Integer.parseInt(keyColumn))
 				keyCol = line[i];
 			else if (i == Integer.parseInt(valueColumn))
 				valueCol = line[i];

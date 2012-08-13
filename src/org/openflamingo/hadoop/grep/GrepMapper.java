@@ -11,6 +11,8 @@ import java.io.IOException;
 /**
  * Mapper for Grep
  *
+ * TODO] Regular expression. -> pattern matching
+ *
  * @author Hyunje
  */
 public class GrepMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
@@ -28,19 +30,19 @@ public class GrepMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
 
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-		String line[] = value.toString().split(inputDelimiter);
-		String outputLine="";
+		String lines[] = value.toString().split(inputDelimiter);
+		String outputLine = "";
 		boolean checked = false;
-		for (String aLine : line) {
-			if(aLine.equals(target))
+		for (String line : lines) {
+			if (line.equals(target))
 				checked = true;
 		}
 
-		if(checked){
-			for (String aLine : line){
+		if (checked) {
+			for (String aLine : lines) {
 				outputLine = outputLine + aLine + outputDelimiter;
 			}
-			context.write(NullWritable.get(),new Text(outputLine.substring(0,outputLine.length()-1)));
+			context.write(NullWritable.get(), new Text(outputLine.substring(0, outputLine.length() - 1)));
 		}
 	}
 

@@ -33,17 +33,15 @@ public class ReplaceMapper extends Mapper<LongWritable, Text, NullWritable, Text
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String[] line = value.toString().split(inDelimiter);
-		String outputLine="";
-		for(int i=0;i<line.length;i++)
-		{
-			if(i == Integer.parseInt(targetColumn))
-			{
-				if(line[i].equals(oldValue))
+		String outputLine = "";
+		for (int i = 0; i < line.length; i++) {
+			if (i == Integer.parseInt(targetColumn)) {
+				if (line[i].equals(oldValue))
 					line[i] = newValue;
 			}
 			outputLine = outputLine + line[i] + outDelimiter;
 		}
-		context.write(NullWritable.get(),new Text(outputLine.substring(0,outputLine.length()-1)));
+		context.write(NullWritable.get(), new Text(outputLine.substring(0, outputLine.length() - 1)));
 	}
 
 	@Override
