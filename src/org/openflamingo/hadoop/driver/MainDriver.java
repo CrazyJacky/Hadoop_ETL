@@ -18,6 +18,8 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+import java.io.IOException;
+
 /**
  * Driver for ETL.
  *
@@ -48,119 +50,154 @@ public class MainDriver extends Configured implements Tool {
 	}
 	private void parseArguementsAndSetJob(String[] args) throws Exception {
 		for (int i = 0; i < args.length; ++i) {
-			if (args[i].equals("-input")) {
+			if (args[i].equals("-input"))
 				FileInputFormat.addInputPaths(job, args[++i]);
-			} else if (args[i].equals("-output")) {
+			else if (args[i].equals("-output"))
 				FileOutputFormat.setOutputPath(job, new Path(args[++i]));
-			} else if (args[i].equals("-jobName")) {
+			else if (args[i].equals("-jobName"))
 				job.getConfiguration().set("mapred.job.name", args[++i]);
-			} else if (args[i].equals("-indelimiter")) {
+			else if (args[i].equals("-indelimiter"))
 				job.getConfiguration().set("indelimiter", args[++i]);
-			} else if (args[i].equals("-outdelimiter")) {
+			else if (args[i].equals("-outdelimiter"))
 				job.getConfiguration().set("outdelimiter", args[++i]);
-			} else if (args[i].equals("-clean")){
-				//Mapper Class
-				job.setMapperClass(CleanMapper.class);
-
-				//Output Key/Value
-				job.setMapOutputKeyClass(NullWritable.class);
-				job.setMapOutputValueClass(Text.class);
-
-				//Reducer Task
-				job.setNumReduceTasks(0);
-
-				//Set Parameter
-				job.getConfiguration().set("target",args[++i]);
-			} else if (args[i].equals("-aggregate")){
-				//Mapper Class
-				job.setMapperClass(AggregateMapper.class);
-
-				//Output Key/Value
-				job.setMapOutputKeyClass(NullWritable.class);
-				job.setMapOutputValueClass(Text.class);
-
-				//Reducer Task
-				job.setNumReduceTasks(0);
-
-				//Set Parameter
-				FileInputFormat.addInputPaths(job, args[++i]);
-			} else if (args[i].equals("-replace")){
-				//Mapper Class
-				job.setMapperClass(ReplaceMapper.class);
-
-				//Output Key/Value
-				job.setMapOutputKeyClass(NullWritable.class);
-				job.setMapOutputValueClass(Text.class);
-
-				//Reducer Task
-				job.setNumReduceTasks(0);
-
-				//Set Parameters
-				job.getConfiguration().set("targetColumn",args[++i]);
-				job.getConfiguration().set("oldValue",args[++i]);
-				job.getConfiguration().set("newValue",args[++i]);
-			} else if (args[i].equals("-filter")) {
-
-				// Mapper Class
-				job.setMapperClass(FilterMapper.class);
-
-				// Output Key/Value
-				job.setMapOutputKeyClass(NullWritable.class);
-				job.setMapOutputValueClass(Text.class);
-
-				// Reducer Task
-				job.setNumReduceTasks(0);
-
-				//Set Parameters
-				//value : EMPTY, NEMPTY, EQ, NEQ, GT, LT, GTE, LTE, START, END
-				job.getConfiguration().set("targetColumn",args[++i]);
-
-				if(args[i+1] != null){
-					if(args[i + 1].equals("EMPTY") || args[i+1].equals("NEMPTY"))
-					{
-						job.getConfiguration().set("commandName", args[++i].toLowerCase());
-						job.getConfiguration().set("value",null);
-					}
-					else
-					{
-						job.getConfiguration().set("commandName",args[++i].toLowerCase());
-						job.getConfiguration().set("value",args[++i]);
-					}
+			else if (args[i].equals("-clean"))
+				setCleanJob(args[++i]);
+			else if (args[i].equals("-aggregate"))
+				setAggregateJob(args[++i]);
+			else if (args[i].equals("-replace"))
+				setReplaceJob(args[++i],args[++i],args[++i]);
+			else if (args[i].equals("-filter")){
+				if(args[i+3] != null){
+					setFilterJob(args[++i],args[++i],args[++i]);
+				} else if (args[i+2] != null){
+					setFilterJob(args[++i],args[++i]);
 				}
-			} else if (args[i].equals("-grep")){
-				//Mapper Class
-				job.setMapperClass(GrepMapper.class);
-
-				//Output Key/Value
-				job.setMapOutputKeyClass(NullWritable.class);
-				job.setMapOutputValueClass(Text.class);
-
-				//Reducer Task
-				job.setNumReduceTasks(0);
-
-				//Set Parameters
-				job.getConfiguration().set("target",args[++i]);
-			} else if (args[i].equals("-group")){
-				//Mapper Class
-				job.setMapperClass(GroupMapper.class);
-
-				//Reducer Class
-				job.setReducerClass(GroupReducer.class);
-
-				//Reducer Task
-				job.setNumReduceTasks(1);
-
-				//Output Key/Value
-				job.setMapOutputKeyClass(Text.class);
-				job.setMapOutputValueClass(Text.class);
-				job.setOutputKeyClass(Text.class);
-				job.setOutputValueClass(Text.class);
-
-				//Set Parameters
-				job.getConfiguration().set("keyColumn",args[++i]);
-				job.getConfiguration().set("valueColumn",args[++i]);
 			}
+			else if (args[i].equals("-grep"))
+				setGerpJob(args[++i]);
+			else if (args[i].equals("-group"))
+				setGroupjob(args[++i],args[++i]);
+
 		}
 	}
+
+	private void setCleanJob(String target)
+		{
+			//Mapper Class
+			job.setMapperClass(CleanMapper.class);
+
+			//Output Key/Value
+			job.setMapOutputKeyClass(NullWritable.class);
+			job.setMapOutputValueClass(Text.class);
+
+			//Reducer Task
+			job.setNumReduceTasks(0);
+
+			//Set Parameter
+			job.getConfiguration().set("target",target);
+
+		}
+
+		private void setAggregateJob(String aggPath) throws IOException {
+			//Mapper Class
+			job.setMapperClass(AggregateMapper.class);
+
+			//Output Key/Value
+			job.setMapOutputKeyClass(NullWritable.class);
+			job.setMapOutputValueClass(Text.class);
+
+			//Reducer Task
+			job.setNumReduceTasks(0);
+
+			//Set Parameter
+			FileInputFormat.addInputPaths(job, aggPath);
+		}
+
+		private void setReplaceJob(String targetColumn, String oldValue, String newVlaue)
+		{
+			//Mapper Class
+			job.setMapperClass(ReplaceMapper.class);
+
+			//Output Key/Value
+			job.setMapOutputKeyClass(NullWritable.class);
+			job.setMapOutputValueClass(Text.class);
+
+			//Reducer Task
+			job.setNumReduceTasks(0);
+
+			//Set Parameters
+			job.getConfiguration().set("targetColumn",targetColumn);
+			job.getConfiguration().set("oldValue",oldValue);
+			job.getConfiguration().set("newValue",newVlaue);
+		}
+
+		private void setFilterJob(String targetColumn, String ... args)
+		{
+			// Mapper Class
+			job.setMapperClass(FilterMapper.class);
+
+			// Output Key/Value
+			job.setMapOutputKeyClass(NullWritable.class);
+			job.setMapOutputValueClass(Text.class);
+
+			// Reducer Task
+			job.setNumReduceTasks(0);
+
+			//Set Parameters
+			//value : EMPTY, NEMPTY, EQ, NEQ, GT, LT, GTE, LTE, START, END
+			job.getConfiguration().set("targetColumn",targetColumn);
+
+			if(args.length == 1){
+				if(args[0].equals("EMPTY") || args[0].equals("NEMPTY"))
+				{
+					job.getConfiguration().set("commandName", args[0].toLowerCase());
+					job.getConfiguration().set("value",null);
+				}
+			} else if (args.length == 2){
+				if(!(args[0].equals("EMPTY") || args[0].equals("NEMPTY")))
+				{
+					job.getConfiguration().set("commandName",args[0].toLowerCase());
+					job.getConfiguration().set("value",args[1]);
+				}
+			}
+		}
+
+		private void setGerpJob(String target)
+		{
+			//Mapper Class
+			job.setMapperClass(GrepMapper.class);
+
+			//Output Key/Value
+			job.setMapOutputKeyClass(NullWritable.class);
+			job.setMapOutputValueClass(Text.class);
+
+			//Reducer Task
+			job.setNumReduceTasks(0);
+
+			//Set Parameters
+			job.getConfiguration().set("target",target);
+		}
+
+		private void setGroupjob(String keyColumn, String valueColumn)
+		{
+			//Mapper Class
+			job.setMapperClass(GroupMapper.class);
+
+			//Reducer Class
+			job.setReducerClass(GroupReducer.class);
+
+			//Reducer Task
+			job.setNumReduceTasks(1);
+
+			//Output Key/Value
+			job.setMapOutputKeyClass(Text.class);
+			job.setMapOutputValueClass(Text.class);
+			job.setOutputKeyClass(Text.class);
+			job.setOutputValueClass(Text.class);
+
+			//Set Parameters
+			job.getConfiguration().set("keyColumn",keyColumn);
+			job.getConfiguration().set("valueColumn",valueColumn);
+		}
 }
 
