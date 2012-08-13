@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivysettings>
+	<settings defaultResolver="chained"/>
+	<resolvers>
+		<chain name="chained">
+			<ibiblio name="openflamingo" m2compatible="true"
+			         root="http://115.68.14.50:9090/content/groups/public"/>
+		</chain>
+	</resolvers>
+</ivysettings>

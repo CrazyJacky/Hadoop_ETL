@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+
+	<info organisation="org.openflamingo.hadoop" module="hadoop-example"/>
+
+	<dependencies>
+		<dependency org="org.apache.hadoop" name="hadoop-core" rev="1.0.3" conf="*->*,!sources,!javadoc"/>
+		<dependency org="org.apache.pig" name="pig" rev="0.10.0" conf="*->*,!sources,!javadoc"/>
+		<dependency org="commons-io" name="commons-io" rev="2.0.1" conf="*->*,!sources,!javadoc"/>
+		<dependency org="commons-lang" name="commons-lang" rev="2.5" conf="*->*,!sources,!javadoc"/>
+		<dependency org="commons-cli" name="commons-cli" rev="1.2" conf="*->*,!sources,!javadoc"/>
+		<dependency org="org.apache.commons" name="commons-exec" rev="1.1" conf="*->*,!sources,!javadoc"/>
+		<dependency org="junit" name="junit" rev="4.8.2" conf="*->*,!sources,!javadoc"/>
+	</dependencies>
+</ivy-module>
