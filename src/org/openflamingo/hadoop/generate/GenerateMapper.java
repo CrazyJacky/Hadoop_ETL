@@ -16,22 +16,19 @@ import java.io.IOException;
 public class GenerateMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
 	private String inDelimiter;
 	private String outDelimiter;
-	private String mapperID;
 	private int startIndex;
-	private int maxIndexSize;
 
 	@Override
 	protected void setup(Context context) throws IOException, InterruptedException {
 		Configuration configuration = context.getConfiguration();
 		String orignID[] = context.getTaskAttemptID().toString().split("_");
-		mapperID = orignID[orignID.length - 2] + orignID[orignID.length - 1];
+		String mapperID = orignID[orignID.length - 2] + orignID[orignID.length - 1];
 
 		inDelimiter = configuration.get("indelimiter");
 		outDelimiter = configuration.get("outdelimiter");
 
 		String paramValue[] = configuration.get(mapperID).split(",");
 		startIndex = Integer.parseInt(paramValue[0]);
-		maxIndexSize = Integer.parseInt(paramValue[1]);
 
 	}
 
