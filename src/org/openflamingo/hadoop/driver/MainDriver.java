@@ -67,9 +67,9 @@ public class MainDriver extends Configured implements Tool {
 			else if (args[i].equals("-replace"))
 				setReplaceJob(args[++i],args[++i],args[++i]);
 			else if (args[i].equals("-filter")){
-				if(args[i+3] != null){
+				if(args.length-1-i == 3){
 					setFilterJob(args[++i],args[++i],args[++i]);
-				} else if (args[i+2] != null){
+				} else if (args.length-1-i == 2){
 					setFilterJob(args[++i],args[++i]);
 				}
 			}
@@ -77,7 +77,6 @@ public class MainDriver extends Configured implements Tool {
 				setGerpJob(args[++i]);
 			else if (args[i].equals("-group"))
 				setGroupjob(args[++i],args[++i]);
-
 		}
 	}
 
@@ -151,7 +150,7 @@ public class MainDriver extends Configured implements Tool {
 				if(args[0].equals("EMPTY") || args[0].equals("NEMPTY"))
 				{
 					job.getConfiguration().set("commandName", args[0].toLowerCase());
-					job.getConfiguration().set("value",null);
+					job.getConfiguration().set("value","null");
 				}
 			} else if (args.length == 2){
 				if(!(args[0].equals("EMPTY") || args[0].equals("NEMPTY")))
