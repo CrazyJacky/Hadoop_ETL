@@ -12,13 +12,13 @@ public interface BasicParserInterface {
 	 * Sets parameters. Number of parameters can be got by calling <code>getNumofParams()</code>
 	 * in <code>BasicOperationParser</code>
 	 */
-	void setParameters();
+	void addParameter(String paramName, String paramValue);
 
 	/**
 	 *  Run this operation.
 	 * @return the status of finished the operation.
 	 */
-	int Run();
+	//int Run();
 
 	/**
 	 * Check parameters of this operation are valid.

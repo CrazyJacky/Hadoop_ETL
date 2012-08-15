@@ -8,7 +8,6 @@ package hadoop;
  * This class can be used as follows(in <code>clean</code> operation):
  * <p><blockquote><pre>
  *     Parameter targetColumn = new Parameter("targetColumn",0);
- *
  * </pre></blockquote></p>
  *
  * @author Hyunje
