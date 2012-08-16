@@ -1,6 +1,5 @@
 package org.openflamingo.hadoop.driver;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
@@ -10,7 +9,6 @@ import org.apache.hadoop.mapreduce.CounterGroup;
 import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -18,16 +16,30 @@ import org.openflamingo.hadoop.generate.CounterMapper;
 import org.openflamingo.hadoop.generate.GenerateMapper;
 
 /**
- * Driver for Generate ETL
- *
+ * <code>GenerateDriver</code> manages and runs only generate ETL.
  * @author Hyunje
  */
 public class GenerateDriver extends Configured implements Tool {
+	/**
+	 * Runs using <code>ToolRunner</code>
+	 * @param args arguments
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		int res = ToolRunner.run(new GenerateDriver(), args);
 		System.exit(res);
 	}
 
+	/**
+	 * Run the job.
+	 * <p>Generate has two jobs. First job is <code>countJob</code>, second one is <code>generateJob</code>.
+	 * <pre><code>countJob</code> save the number of lines for each mapper.</pre>
+	 * <pre><code>generateJob</code> generates unique number of each row.</pre>
+	 *
+	 * @param args arguments
+	 * @return exit status of job.
+	 * @throws Exception
+	 */
 	@Override
 	public int run(String[] args) throws Exception {
 		Job countJob = new Job();
@@ -54,6 +66,13 @@ public class GenerateDriver extends Configured implements Tool {
 		return generateJob.waitForCompletion(true) ? 0 : 1;
 	}
 
+	/**
+	 * Parse arguments and set count job and generate job using parsed result.
+	 * @param args arguments
+	 * @param countJob countJob
+	 * @param genJob generateJob
+	 * @throws Exception
+	 */
 	private void parseArguementsAndSetCountJob(String[] args, Job countJob, Job genJob) throws Exception {
 		for (int i = 0; i < args.length; ++i) {
 			if (args[i].equals("-input")) {

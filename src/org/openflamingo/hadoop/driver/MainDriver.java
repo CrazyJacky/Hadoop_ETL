@@ -21,21 +21,35 @@ import org.apache.hadoop.util.ToolRunner;
 import java.io.IOException;
 
 /**
- * Driver for ETL.
+ * This class <code>MainDriver</code> manages almost ETL.
+ * <p>Aggregate, Clean, Filter, Grep, Group, Replace will be treate on this class.</p>
  *
  * @author Hyunje
- * @since 2012-08
  */
 public class MainDriver extends Configured implements Tool {
+	/**
+	 * Job object to be run.
+	 */
 	Job job;
 
+	/**
+	 * Runs using <code>ToolRunner</code>
+	 * @param args arguments
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		int res = ToolRunner.run(new MainDriver(), args);
 		System.exit(res);
 	}
 
+	/**
+	 * Run the job.
+	 * @param args arguments
+	 * @return exit status of job.
+	 * @throws Exception
+	 */
 	@Override
-	public int run(String[] args) throws Exception {
+	public int run(String[] args) throws Exception{
 		job = new Job();
 
 		//Parse Arguments and Setting Job.
@@ -48,6 +62,11 @@ public class MainDriver extends Configured implements Tool {
 		return job.waitForCompletion(true) ? 0 : 1;
 	}
 
+	/**
+	 * Parse arguments and set job using parsed result.
+	 * @param args arguments
+	 * @throws Exception
+	 */
 	private void parseArguementsAndSetJob(String[] args) throws Exception {
 		for (int i = 0; i < args.length; ++i) {
 			//공통적인 파라메터는 한 클래스로.
@@ -84,6 +103,10 @@ public class MainDriver extends Configured implements Tool {
 		}
 	}
 
+	/**
+	 * Set job for clean ETL.
+	 * @param target target column to clean.
+	 */
 	private void setCleanJob(String target) {
 		//Mapper Class
 		job.setMapperClass(CleanMapper.class);
@@ -100,6 +123,11 @@ public class MainDriver extends Configured implements Tool {
 
 	}
 
+	/**
+	 * Set job for aggregate ETL.
+	 * @param aggPath path of file to aggregate.
+	 * @throws IOException
+	 */
 	private void setAggregateJob(String aggPath) throws IOException {
 		//Mapper Class
 		job.setMapperClass(AggregateMapper.class);
@@ -115,6 +143,12 @@ public class MainDriver extends Configured implements Tool {
 		FileInputFormat.addInputPaths(job, aggPath);
 	}
 
+	/**
+	 * Set job for replace ETL.
+	 * @param targetColumn target column that user wants to change
+	 * @param oldValue the value has to be changed
+	 * @param newVlaue the value want to change
+	 */
 	private void setReplaceJob(String targetColumn, String oldValue, String newVlaue) {
 		//Mapper Class
 		job.setMapperClass(ReplaceMapper.class);
@@ -132,6 +166,12 @@ public class MainDriver extends Configured implements Tool {
 		job.getConfiguration().set("newValue", newVlaue);
 	}
 
+	/**
+	 * Set job for filter ETL.
+	 * <p>Filter provides EMPTY, NEMPTY, EQ, NEQ, GT, LT, GTE, LTE, START, END
+	 * @param targetColumn target column to be filtered
+	 * @param args arguments, query like "GT 3" (means greater than 3)
+	 */
 	private void setFilterJob(String targetColumn, String... args) {
 		// Mapper Class
 		job.setMapperClass(FilterMapper.class);
@@ -160,6 +200,11 @@ public class MainDriver extends Configured implements Tool {
 		}
 	}
 
+	/**
+	 * Set job for grep ETL
+	 * @param target target value to find.
+	 * TODO{need regular expression}
+	 */
 	private void setGerpJob(String target) {
 		//Mapper Class
 		job.setMapperClass(GrepMapper.class);
@@ -175,6 +220,11 @@ public class MainDriver extends Configured implements Tool {
 		job.getConfiguration().set("target", target);
 	}
 
+	/**
+	 * Set job for group ETL
+	 * @param keyColumn column for key
+	 * @param valueColumn column to be grouped
+	 */
 	private void setGroupjob(String keyColumn, String valueColumn) {
 		//Mapper Class
 		job.setMapperClass(GroupMapper.class);

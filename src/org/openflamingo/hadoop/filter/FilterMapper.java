@@ -9,20 +9,56 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 
 /**
- * Mapper for Filter
- * EQ, NOT EQ, GT, LT, GTE, LTE, EMPTY,
- * NOT EMPTY, START, END 등등 지원
+ * The <code>FilterMapper</code> class represents mapper for filter ETL. To filter a column, mapper needs
+ * index of target column and query for that.
+ * <p>Mapper writes read data when the query is true.
+ * <p>
+ *     <pre>
+ *         source : 1,aa,xxx
+ *                  2,bb,yyy
+ *                  3,cc,xxx
+ *                  4,dd,zzz
+ *
+ *         target : 2 (start at 0)
+ *         query : EQ xxx
+ *
+ *         result : 1,aa,xxx
+ *                  3,cc,xxx
+ *     </pre>
+ * </p>
  *
  * @author Hyunje
  */
 public class FilterMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
+	/**
+	 * Delimiter for input
+	 */
 	String inDelimiter;
+	/**
+	 * Delimiter for output
+	 */
 	String outDelimiter;
+	/**
+	 * Target column to be filtered
+	 */
 	String targetColumn;
 
+	/**
+	 * Name of query
+	 */
 	String commandName;
+	/**
+	 * Value of query. In example, it is 'xxx'
+	 */
 	String commandValue;
 
+
+	/**
+	 * Setups when executing Mapper. This function is called only once. Sets parameters.
+	 * @param context context of current job
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	@Override
 	protected void setup(Context context) throws IOException, InterruptedException {
 		Configuration configuration = context.getConfiguration();
@@ -39,17 +75,23 @@ public class FilterMapper extends Mapper<LongWritable, Text, NullWritable, Text>
 		//Filter의 핵심은 확장성.
 	}
 
-
+	/**
+	 * <p>Runs <code>map()</code> for each line of input.</p>
+     * <p>Input key value is index of current line. And output key is null, value is text.</p>
+	 * <p>Filters target column</p>
+	 * @param key input key of this mapper
+	 * @param value input value of this mapper
+	 * @param context context of current job
+	 * @throws IOException
+	 * @throws InterruptedException
+	 *
+	 * TODO{have to change using hashmap}
+	 */
 	@Override
 	protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String[] line = value.toString().split(inDelimiter); //
 		int target = Integer.parseInt(targetColumn); //
 		String outputLine = "";
-
-		/*
-			연산자의 종류에 따라서 interface 뽑는다.
-		 */
-
 		if (commandName.equals("EMPTY".toLowerCase())) {
 			if (line[target].isEmpty())
 				outputLine = value.toString();
